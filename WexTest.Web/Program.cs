@@ -1,4 +1,6 @@
-using WexTest.Web;
+using Microsoft.FluentUI.AspNetCore.Components;
+
+using WexTest.Web.ApiClients;
 using WexTest.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +12,7 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddOutputCache();
-
+builder.Services.AddFluentUIComponents();
 builder.Services.AddHttpClient<WeatherApiClient>(client =>
     {
         // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.

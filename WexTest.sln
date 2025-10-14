@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WexTest.ApiService", "WexTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WexTest.Web", "WexTest.Web\WexTest.Web.csproj", "{D69C6F99-0920-46AA-883A-C75D3CF814DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WexTest.Shared", "WexTest.Shared\WexTest.Shared.csproj", "{D0D7F233-D768-49DE-B889-9A734AB09FAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{D69C6F99-0920-46AA-883A-C75D3CF814DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D69C6F99-0920-46AA-883A-C75D3CF814DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D69C6F99-0920-46AA-883A-C75D3CF814DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0D7F233-D768-49DE-B889-9A734AB09FAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0D7F233-D768-49DE-B889-9A734AB09FAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0D7F233-D768-49DE-B889-9A734AB09FAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0D7F233-D768-49DE-B889-9A734AB09FAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

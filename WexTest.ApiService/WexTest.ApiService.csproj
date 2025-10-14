@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WexTest.ServiceDefaults\WexTest.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\WexTest.Shared\WexTest.Shared.csproj" />
   </ItemGroup>
 
 </Project>
