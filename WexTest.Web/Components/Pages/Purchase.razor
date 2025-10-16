@@ -1,5 +1,40 @@
-﻿<h3>Purchase</h3>
+@page "/purchase"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
 
-@code {
+<PageTitle>Purchase</PageTitle>
+<h3>Purchase Transaction</h3>
+<h6>Enter your purchase transaction.</h6>
+<h6>The Transaction amount is always treated as being in USD($)</h6>
+<br />
+<EditForm Model="@PurchaseModel" FormName="PurchaseForm" OnValidSubmit="@HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<div Style="gap: 1rem; max-width: 350px">
+		Description:<br />
+		<InputText @bind-Value="@PurchaseModel.Description"
+				   type="text" style="width:100%;" />
+		<ValidationMessage For="(() => PurchaseModel.Description)"/>
+		<br /><br />
 
-}
+		Date:
+		<InputDate @bind-Value="@PurchaseModel.TransactionDate"
+				   style="width:50%;"
+				   Max="@DateTime.Today" />
+		<ValidationMessage For="(() => PurchaseModel.TransactionDate)" />
+		<br />
+		<br />
+
+		Amount(USD):<br />
+		<InputNumber @bind-Value="@PurchaseModel.PurchaseAmount"
+					 type="text"
+					 style="width: 50%;"/>
+		<ValidationMessage For="(() => PurchaseModel.PurchaseAmount)" />
+		<br />
+		<br />
+
+		<!-- Submit Button -->
+		<div style="margin-bottom: 20px; align-content: center;">
+			<button class="btn btn-primary" type="submit">Submit</button>
+		</div>
+	</div>
+</EditForm>

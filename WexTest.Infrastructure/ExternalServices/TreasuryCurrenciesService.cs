@@ -53,7 +53,7 @@ namespace WexTest.Infrastructure.ExternalServices
         {
             if (DateTime.UtcNow > lastUpdated.AddMinutes(refreshMinutes))
             {
-                var apiEndpoint = $"{treasuryUrl}?fields=country_currency_desc,effective_date,record_date,exchange_rate";
+                var apiEndpoint = $"{treasuryUrl}?fields=country_currency_desc,effective_date,record_date,exchange_rate&page[number]=1&page[size]=20000";
                 var response = await httpClient.GetAsync(apiEndpoint);
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();

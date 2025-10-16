@@ -1,5 +1,7 @@
 using Microsoft.FluentUI.AspNetCore.Components;
 
+using Serilog;
+
 using WexTest.Web.ApiClients;
 using WexTest.Web.Components;
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
+builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -19,7 +22,10 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
         // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
         client.BaseAddress = new("https+http://apiservice");
     });
-
+builder.Services.AddHttpClient<PurchaseApiClient>(client =>
+    {
+        client.BaseAddress = new("https+http://apiservice");
+    });
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -30,15 +36,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-
 app.UseOutputCache();
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
 app.MapDefaultEndpoints();
-
 app.Run();
