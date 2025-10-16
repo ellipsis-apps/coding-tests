@@ -1,36 +1,37 @@
+using Serilog;
+
+using WexTest.ApiService;
+using WexTest.Application.Interfaces;
+using WexTest.Infrastructure.ExternalServices;
+using WexTest.Infrastructure.Persistance;
 using WexTest.Shared;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
-
-// Add services to the container.
-builder.Services.AddProblemDetails();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-app.UseExceptionHandler();
-
-var summaries = new[]
+internal class Program
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        // Add Serilog (use Host for full hosting integration)
+        builder.Host.UseSerilog((context, configuration) =>
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .Enrich.FromLogContext());
+        // Add service defaults & Aspire components.
+        builder.AddServiceDefaults();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+        // Add services to the container.
+        builder.Services.AddProblemDetails();
+        builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
+        builder.Services.AddScoped<IPurchaseTransactionRepository, PurchaseTransactionRepository>();
+        builder.Services.AddSingleton<TreasuryCurrenciesService>();
 
-app.MapDefaultEndpoints();
+        var app = builder.Build();
 
-app.Run();
+        // Configure the HTTP request pipeline.
+        app.UseExceptionHandler();
+
+        app.MapApiEndpoints();
+        app.MapDefaultEndpoints();
+        app.Run();
+    }
+}
