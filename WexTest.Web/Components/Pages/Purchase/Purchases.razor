@@ -6,13 +6,20 @@
 <h6>List of your Purchases</h6>
 <br />
 <div style="width:90%">
-	<MudDataGrid Items="@purchases.Take(4)">
+	<MudDataGrid T="ConvertedPurchase"
+				 Items="@PurchaseTransactions"
+				 @ref="_dataGrid"
+				 SortMode="SortMode.Single">
 		<Columns>
 			<PropertyColumn Property="x => x.Id" Title="Id" />
-			<PropertyColumn Property="x => x.Description" Title="Description" />
+			<PropertyColumn Property="x => x.Description" Title="Description" Sortable="true" />
+			<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Sortable="true" />
 			<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" />
 			<PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" />
 			<PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" />
 		</Columns>
+		<PagerContent>
+			<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20}"/>
+		</PagerContent>
 	</MudDataGrid>
 </div>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using WexTest.Shared.PurchaseTransactions;
 using WexTest.Web.ApiClients;
 
-namespace WexTest.Web.Components.Pages
+namespace WexTest.Web.Components.Pages.Purchase
 {
     public partial class Purchase : ComponentBase
     {

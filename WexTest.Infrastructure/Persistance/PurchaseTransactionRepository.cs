@@ -9,6 +9,16 @@ namespace WexTest.Infrastructure.Persistance
     {
         private static ConcurrentBag<PurchaseTransaction> PurchaseTransactions = new ConcurrentBag<PurchaseTransaction>();
 
+        public PurchaseTransactionRepository()
+        {
+            //ToDo: remove seeding
+            for (int i = 1; i < 10; i++)
+            {
+                var txn = new PurchaseTransaction() { Description = $"Seed Txn {i}", Id = Guid.NewGuid(), PurchaseAmount = 1m * i, TransactionDate = DateTime.UtcNow.AddDays(i * -7)};
+                PurchaseTransactions.Add(txn);
+            }
+        }
+
         public PurchaseTransaction Add(PurchaseTransaction entity)
         {
             PurchaseTransactions.Add(entity);

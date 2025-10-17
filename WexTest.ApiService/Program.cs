@@ -1,6 +1,6 @@
 using Serilog;
 
-using WexTest.ApiService;
+using WexTest.ApiService.Endpoints;
 using WexTest.Application.Interfaces;
 using WexTest.Infrastructure.ExternalServices;
 using WexTest.Infrastructure.Persistance;
@@ -23,14 +23,14 @@ internal class Program
         builder.Services.AddProblemDetails();
         builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
         builder.Services.AddScoped<IPurchaseTransactionRepository, PurchaseTransactionRepository>();
-        builder.Services.AddSingleton<TreasuryCurrenciesService>();
+        builder.Services.AddSingleton<ITreasuryCurrencyService, TreasuryCurrencyService>();
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         app.UseExceptionHandler();
-
-        app.MapApiEndpoints();
+        app.MapPurchaseEndpoints();
+        app.MapCurrencyEndpoints();
         app.MapDefaultEndpoints();
         app.Run();
     }

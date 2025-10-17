@@ -1,24 +1,21 @@
+using WexTest.Domain.Entities;
 using WexTest.Shared.PurchaseTransactions;
 
 namespace WexTest.Web.ApiClients
 {
     public class PurchaseApiClient(HttpClient httpClient)
     {
-        public async Task<PurchaseTransactionItem[]> GetPurchaseTransactions(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<PurchaseTransaction>> GetPurchaseTransactions(CancellationToken cancellationToken = default)
         {
-            List<PurchaseTransactionItem>? purchaseTransactions = null;
-
-            await foreach (var purchaseItem in httpClient.GetFromJsonAsAsyncEnumerable<PurchaseTransactionItem>("/purchase", cancellationToken))
+            var responseItems = new List<PurchaseTransaction>();
+            await foreach (var item in httpClient.GetFromJsonAsAsyncEnumerable<PurchaseTransaction>("/purchase", cancellationToken))
             {
-                if (purchaseItem is not null)
-                {
-                    purchaseTransactions ??= [];
-                    purchaseTransactions.Add(purchaseItem);
-                }
+                if (item != null)
+                    responseItems.Add(item);
             }
-            return purchaseTransactions?.ToArray() ?? [];
+            return responseItems;
         }
-
+            
         public async Task PutPurchaseTransaction(PurchaseTransactionRequest request, CancellationToken cancellation = default)
         {
             _ = await httpClient.PutAsJsonAsync("/purchase", request, cancellation);

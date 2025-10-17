@@ -8,29 +8,12 @@ using WexTest.Infrastructure.Persistance;
 using WexTest.Shared;
 using WexTest.Shared.PurchaseTransactions;
 
-namespace WexTest.ApiService
+namespace WexTest.ApiService.Endpoints
 {
-    public static class ApiEndpoints
+    public static class PurchaseEndpoints
     {
-        public static void MapApiEndpoints(this WebApplication app)
+        public static void MapPurchaseEndpoints(this WebApplication app)
         {
-            var summaries = new[]
-            { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-
-            //app.MapGet("/weatherforecast", ([FromServices] ILogger<Program> logger) =>
-            //{
-            //    logger.LogInformation("Handling /weatherforecast request");
-            //    var forecast = Enumerable.Range(1, 5).Select(index =>
-            //        new WeatherForecast
-            //        (
-            //            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            //            Random.Shared.Next(-20, 55),
-            //            summaries[Random.Shared.Next(summaries.Length)]
-            //        ))
-            //        .ToArray();
-            //    return forecast;
-            //});
-
             app.MapPut("/purchase", ([FromServices] ILogger<Program> logger, [FromServices] IPurchaseTransactionRepository purchaseTransactionRepository, [FromBody] PurchaseTransactionRequest request) =>
             {
                 logger.LogInformation("Handling PUT /purchase request");
@@ -53,14 +36,14 @@ namespace WexTest.ApiService
                 return Results.Created();
             });
 
-            app.MapGet("/purchase", ([FromServices] ILogger<Program> logger, [FromServices] IPurchaseTransactionRepository purchaseTransactionRepository, string? description, string? foreignCurrency, string? asOfDate) =>
+            app.MapGet("/purchase", ([FromServices] ILogger<Program> logger, [FromServices] IPurchaseTransactionRepository purchaseTransactionRepository, string? description) =>
             {
                 logger.LogInformation("Handling GET /purchase request");
-                var purchaseTransactions = new List<PurchaseTransactionItem>();
+                var purchaseTransactions = new List<PurchaseTransaction>();
                 var entities = purchaseTransactionRepository.GetAll(description);
                 foreach (var entity in entities)
                 {
-                    var item = new PurchaseTransactionItem();
+                    var item = new PurchaseTransaction();
                     item.Id = entity.Id;
                     item.Description = entity.Description;
                     item.TransactionDate = entity.TransactionDate;
@@ -69,6 +52,6 @@ namespace WexTest.ApiService
                 }
                 return purchaseTransactionRepository.GetAll(description);
             });
-        }
+       }
     }
 }
