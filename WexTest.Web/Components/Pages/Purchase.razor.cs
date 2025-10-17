@@ -19,15 +19,23 @@ namespace WexTest.Web.Components.Pages
         [SupplyParameterFromForm(FormName = "PurchaseForm")]
         private PurchaseTransactionRequest PurchaseModel { get; set; } = new PurchaseTransactionRequest();
 
+        private bool success;
+
+        //private void HandleValidSubmit(EditContext context)
+        //{
+        //    success = true;
+        //    StateHasChanged();
+        //}
+
         private async Task HandleValidSubmit()
         {
-            logger.LogDebug("got to HandleSubmit");
+            logger.LogDebug("got to HandleValidSubmit");
             PurchaseModel.Id = Guid.NewGuid();
-            logger.LogDebug($"HandleSubmit:: description:={PurchaseModel.Description}");
-            logger.LogDebug($"HandleSubmit:: date:={PurchaseModel.TransactionDate.ToString()}");
-            logger.LogDebug($"HandleSubmit:: amount:={PurchaseModel.PurchaseAmount.ToString()}");
+            logger.LogDebug($"HandleValidSubmit:: description:={PurchaseModel.Description}");
+            logger.LogDebug($"HandleValidSubmit:: date:={PurchaseModel.TransactionDate.ToString()}");
+            logger.LogDebug($"HandleValidSubmit:: amount:={PurchaseModel.PurchaseAmount.ToString()}");
             await purchaseApiClient.PutPurchaseTransaction(PurchaseModel);
-            logger.LogDebug($"HandleSubmit:: put the request...");
+            logger.LogDebug($"HandleValidSubmit:: put the request...");
             Navigation.NavigateTo("/purchases");
         }
     }
