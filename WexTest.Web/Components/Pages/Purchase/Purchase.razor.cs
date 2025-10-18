@@ -1,14 +1,18 @@
+using System.Reflection;
+
+using Blazored.SessionStorage;
+
 using Microsoft.AspNetCore.Components;
 
-using WexTest.Shared.PurchaseTransactions;
 using WexTest.Web.ApiClients;
+using WexTest.Web.POCOs;
 
 namespace WexTest.Web.Components.Pages.Purchase
 {
     public partial class Purchase : ComponentBase
     {
         [Inject]
-        private PurchaseApiClient purchaseApiClient { get; set; }
+        private TreasuryApiClient purchaseApiClient { get; set; }
 
         [Inject]
         private NavigationManager Navigation { get; set; }
@@ -16,27 +20,46 @@ namespace WexTest.Web.Components.Pages.Purchase
         [Inject]
         ILogger<Purchase> logger { get; set; }
 
-        [SupplyParameterFromForm(FormName = "PurchaseForm")]
-        private PurchaseTransactionRequest PurchaseModel { get; set; } = new PurchaseTransactionRequest();
+        [Inject]
+        private ISessionStorageService sessionStorageService { get; set; }
 
-        private bool success;
+        private bool sessionDataExists = false;
 
-        //private void HandleValidSubmit(EditContext context)
-        //{
-        //    success = true;
-        //    StateHasChanged();
-        //}
+        //[SupplyParameterFromForm(FormName = "PurchaseForm")]
+        private PurchaseTransaction PurchaseModel { get; set; } = new PurchaseTransaction();
+
+        private List<PurchaseTransaction> currentPurchases = new List<PurchaseTransaction>();
 
         private async Task HandleValidSubmit()
         {
-            logger.LogDebug("got to HandleValidSubmit");
+            Console.WriteLine($"Purchase.HandleValidSubmit:: entering");
             PurchaseModel.Id = Guid.NewGuid();
-            logger.LogDebug($"HandleValidSubmit:: description:={PurchaseModel.Description}");
-            logger.LogDebug($"HandleValidSubmit:: date:={PurchaseModel.TransactionDate.ToString()}");
-            logger.LogDebug($"HandleValidSubmit:: amount:={PurchaseModel.PurchaseAmount.ToString()}");
-            await purchaseApiClient.PutPurchaseTransaction(PurchaseModel);
-            logger.LogDebug($"HandleValidSubmit:: put the request...");
-            Navigation.NavigateTo("/purchases");
+            currentPurchases.Add(PurchaseModel);
+            await sessionStorageService.SetItemAsync("purchases", currentPurchases);
+            ClearForm();
+            StateHasChanged();
+        }
+
+        private void ClearForm()
+        {
+            PurchaseModel = new PurchaseTransaction();
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Console.WriteLine($"Purchase.OnInitializedAsync:: entering");
+            try
+            {
+                await sessionStorageService.ContainKeyAsync("purchases");
+                currentPurchases = await sessionStorageService.GetItemAsync<List<PurchaseTransaction>>("purchases");
+                Console.WriteLine($"Purchase.OnInitializedAsync:: currentPurchase.count:={currentPurchases.Count()}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Purchase.OnInitializedAsync:: sessionStorage for purchases doesn't exist");
+                currentPurchases = new List<PurchaseTransaction>();
+                await sessionStorageService.SetItemAsync("purchases", currentPurchases);
+            }
         }
     }
 }

@@ -5,21 +5,41 @@
 <h3>Purchases</h3>
 <h6>List of your Purchases</h6>
 <br />
+
 <div style="width:90%">
-	<MudDataGrid T="ConvertedPurchase"
-				 Items="@PurchaseTransactions"
-				 @ref="_dataGrid"
-				 SortMode="SortMode.Single">
-		<Columns>
-			<PropertyColumn Property="x => x.Id" Title="Id" />
-			<PropertyColumn Property="x => x.Description" Title="Description" Sortable="true" />
-			<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Sortable="true" />
-			<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" />
-			<PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" />
-			<PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" />
-		</Columns>
-		<PagerContent>
-			<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20}"/>
-		</PagerContent>
-	</MudDataGrid>
+	@if (PurchaseTransactions.Any())
+	{
+		<MudStack Class="justify-space-between mud-width-full">
+			<MudStack Row Style="width: 300px">
+				<MudAutocomplete T="string"
+								 ValueChanged="OnCurrencyChanged"
+								 SearchFunc="Search"
+								 Variant="Variant.Outlined"
+								 HelperText="Select a Currency for conversion" />
+			</MudStack>
+
+			<MudStack Row Style="width:100%;">
+				<MudDataGrid T="ConvertedPurchase"
+							 Items="@PurchaseTransactions"
+							 @ref="_dataGrid">
+					<Columns>
+						<PropertyColumn Property="x => x.Id" Title="Id" />
+						<PropertyColumn Property="x => x.Description" Title="Description" />
+						<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" />
+						<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" Format="N2" CellStyle="text-align: right;" />
+						<PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" Format="N2" CellStyle="text-align: right;" />
+						<PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" Format="N2" CellStyle="text-align: right;" />
+					</Columns>
+					<PagerContent>
+						<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20 }" />
+					</PagerContent>
+				</MudDataGrid>
+			</MudStack>
+		</MudStack>
+	}
 </div>
+<!-- Manual test buttons -->
+@* <div>
+		<MudButton OnClick="TestPageChange" Color="Color.Primary">Test: Go to Page 2</MudButton>
+		<MudButton OnClick="TestPageSizeChange" Color="Color.Secondary">Test: Change Page Size</MudButton>
+	</div>*@

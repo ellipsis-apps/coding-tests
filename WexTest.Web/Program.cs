@@ -1,46 +1,27 @@
-using Microsoft.FluentUI.AspNetCore.Components;
+using Blazored.SessionStorage;
+
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+
 using MudBlazor.Services;
-using Serilog;
 
 using WexTest.Web.ApiClients;
-using WexTest.Web.Components;
+namespace WexTest.Web;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
-builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-builder.Services.AddOutputCache();
-builder.Services.AddFluentUIComponents();
-builder.Services.AddMudServices();
-//builder.Services.AddHttpClient<WeatherApiClient>(client =>
-//    {
-//        // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
-//        // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
-//        client.BaseAddress = new("https+http://apiservice");
-//    });
-builder.Services.AddHttpClient<PurchaseApiClient>(client =>
-    {
-        client.BaseAddress = new("https+http://apiservice");
-    });
-var app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
+public class Program
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    public static async Task Main(string[] args)
+    {
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.RootComponents.Add<App>("#app");
+        builder.RootComponents.Add<HeadOutlet>("head::after");
+        builder.Services.AddBlazoredSessionStorage();
+        builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+        var TreasuryApiAddress = builder.Configuration["AppSettings:TreasuryApiAddress"];
+        Console.WriteLine($"Main:: TreasuryApiAddress:={TreasuryApiAddress}");
+        builder.Services.AddMudServices();
+        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(TreasuryApiAddress) });
+        builder.Services.AddScoped<TreasuryApiClient>();
+        await builder.Build().RunAsync();
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseAntiforgery();
-app.UseOutputCache();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-app.MapDefaultEndpoints();
-app.Run();

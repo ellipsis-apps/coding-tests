@@ -1,4 +1,6 @@
 @page "/purchase"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
 
 <PageTitle>Purchase</PageTitle>
 <h3>Purchase Transaction</h3>
@@ -24,8 +26,8 @@
 		<br />
 
 		Amount(USD):<br />
-		<MudNumericField @bind-Value="@PurchaseModel.PurchaseAmount"
-					 Format="N2"
+		<InputNumber @bind-Value="@PurchaseModel.PurchaseAmount"
+					 type="text"
 					 style="width: 50%;border: solid 1px black !important;" />
 		<ValidationMessage For="(() => PurchaseModel.PurchaseAmount)" />
 		<br />
