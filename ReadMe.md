@@ -24,7 +24,7 @@ The technical implementation, including frameworks, libraries, etc. is your own 
 You should build this application as if you are building an application to be deployed in a Production environment. This should be interpreted to mean that all functional automated testing you would include for a Production application should be expected. Please note that non-functional test (e.g., performance testing) automation is not needed.
 
 ## Notes
-The folder "BlazorVersion" has the code submitted for the test. It uses the MudBlazor set of UI componentes.
+The folder "MudBlazorVersion" has the code submitted for the test. It uses the MudBlazor set of UI componentes.
 
 After the testing organization has cloned my repo, I intend to re-write the app (in different folders) using various Blazor UI libraries, as well as re-writing it in React & Angular.
 
