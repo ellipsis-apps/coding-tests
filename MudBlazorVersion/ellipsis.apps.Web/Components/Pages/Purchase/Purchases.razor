@@ -5,7 +5,7 @@
 <PageTitle>Purchases</PageTitle>
 <h3>Purchases</h3>
 <h6 style="color:blue;">Select a currency to see the converted purchase amount.</h6>
-<h6 style="color:blue;">There may be no existing conversion rates for some date/currency combinations.</h6>
+<h6 style="color:blue;">There may be no existing conversion rates for some transaction date/currency combinations.</h6>
 <br />
 
 <div style="width:90%">
@@ -66,7 +66,12 @@
 			</MudStack>
 		</MudStack>
 	}
+	else
+	{
+		<h3 style="color: red;">No purchases found!</h3>
+	}
 </div>
+	
 <!-- Manual test buttons -->
 @* <div>
 		<MudButton OnClick="TestPageChange" Color="Color.Primary">Test: Go to Page 2</MudButton>

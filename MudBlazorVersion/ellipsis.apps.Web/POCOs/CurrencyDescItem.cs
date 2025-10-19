@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace WexTest.Web.POCOs
+namespace ellipsis.apps.Web.POCOs
 {
     public class CurrencyDescItem
     {

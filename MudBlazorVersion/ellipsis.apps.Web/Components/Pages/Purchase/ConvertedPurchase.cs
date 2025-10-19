@@ -1,4 +1,4 @@
-namespace WexTest.Web.Components.Pages.Purchase
+namespace ellipsis.apps.Web.Components.Pages.Purchase
 {
     public class ConvertedPurchase
     {

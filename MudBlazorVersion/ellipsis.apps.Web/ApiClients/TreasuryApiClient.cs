@@ -2,9 +2,9 @@ using System.Diagnostics;
 
 using MudBlazor;
 
-using WexTest.Web.POCOs;
+using ellipsis.apps.Web.POCOs;
 
-namespace WexTest.Web.ApiClients
+namespace ellipsis.apps.Web.ApiClients
 {
     public class TreasuryApiClient(HttpClient httpClient)
     {

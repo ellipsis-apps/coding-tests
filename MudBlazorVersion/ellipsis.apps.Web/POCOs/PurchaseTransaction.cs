@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WexTest.Web.POCOs
+namespace ellipsis.apps.Web.POCOs
 {
     public class PurchaseTransaction
     {

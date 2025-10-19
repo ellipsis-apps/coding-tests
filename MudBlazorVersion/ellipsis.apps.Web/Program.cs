@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 using MudBlazor.Services;
 
-using WexTest.Web.ApiClients;
-namespace WexTest.Web;
+using ellipsis.apps.Web.ApiClients;
+namespace ellipsis.apps.Web;
 
 public class Program
 {

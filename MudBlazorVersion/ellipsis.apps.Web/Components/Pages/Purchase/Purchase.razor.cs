@@ -4,10 +4,10 @@ using Blazored.SessionStorage;
 
 using Microsoft.AspNetCore.Components;
 
-using WexTest.Web.ApiClients;
-using WexTest.Web.POCOs;
+using ellipsis.apps.Web.ApiClients;
+using ellipsis.apps.Web.POCOs;
 
-namespace WexTest.Web.Components.Pages.Purchase
+namespace ellipsis.apps.Web.Components.Pages.Purchase
 {
     public partial class Purchase : ComponentBase
     {
