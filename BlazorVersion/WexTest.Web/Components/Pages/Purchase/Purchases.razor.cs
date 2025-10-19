@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Blazored.SessionStorage;
@@ -21,16 +23,10 @@ namespace WexTest.Web.Components.Pages.Purchase
         private TreasuryApiClient treasuryApiClient { get; set; } = default!;
 
         [Inject]
-        private NavigationManager Navigation { get; set; } = default!;
-
-        [Inject]
-        private ILogger<Purchases> logger { get; set; } = default!;
-
-        [Inject]
         private ISessionStorageService sessionStorageService { get; set; }
 
-        private MudDataGrid<ConvertedPurchase> _dataGrid = default!;
-        private bool _isLoading = true;
+        //private MudDataGrid<ConvertedPurchase> _dataGrid = default!;
+        //private bool _isLoading = true;
         private List<ConvertedPurchase> PurchaseTransactions { get; set; } = new();
         private List<string> Currencies { get; set; } = new();
         private string SelectedCurrency;
@@ -56,19 +52,62 @@ namespace WexTest.Web.Components.Pages.Purchase
             return Currencies.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private async Task OnCurrencyChanged(string selectedCurrency)
+        private async Task OnCurrencyChangedAsync(string selectedCurrency)
         {
+            if (string.IsNullOrEmpty(selectedCurrency))
+            {
+                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: reverting to original txns");
+                PurchaseTransactions = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
+                StateHasChanged();
+                return;
+            }
             SelectedCurrency = selectedCurrency;
-            Console.WriteLine($"Purchases.OnCurrencyChanged:: new value:={SelectedCurrency}");
+            Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: new value:={SelectedCurrency}");
             try
             {
+                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: getting conversions for {SelectedCurrency}");
                 CurrencyConversions = await treasuryApiClient.GetCurrencyConversions(SelectedCurrency);
-                Console.WriteLine($"Purchases.OnCurrencyChanged:: conversion count:={CurrencyConversions.Count()}");
+                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: conversion count:={CurrencyConversions.Count()}");
+                await RecalculateTransactionsAsync(CurrencyConversions);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Purchases.OnCurrencyChanged:: exception:={ex.Message}");
+                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: exception:={ex.Message}");
             }
+        }
+
+        private async Task RecalculateTransactionsAsync(List<CurrencyConversionItem> currencyConversions)
+        {
+            Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: entering");
+            // get the originals back
+            var orignalTxns = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
+            // build a new collection w/ converted values
+            var recalculatedTxns = new List<ConvertedPurchase>();
+            foreach (var txn in orignalTxns)
+            {
+                var convertedTxn = await ConvertTxn(txn);
+                recalculatedTxns.Add(convertedTxn);
+                Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: convertedTxn:={JsonSerializer.Serialize(convertedTxn)}");
+            }
+            PurchaseTransactions = recalculatedTxns;
+        }
+
+        private async Task<ConvertedPurchase> ConvertTxn(ConvertedPurchase txn)
+        {
+            var calculatedConversion = txn.Adapt<ConvertedPurchase>();
+            var conversion = CurrencyConversions.Where(p =>
+                DateTime.Parse(p.EffectiveDate) <= txn.TransactionDate &&
+                DateTime.Parse(p.EffectiveDate) >= txn.TransactionDate.AddMonths(-6))
+                .FirstOrDefault();
+            if (conversion != null)
+            {
+                calculatedConversion.ExchangeRate = Decimal.Parse(conversion.ExchangeRate);
+            }
+            else
+            {
+                calculatedConversion.ExchangeRate = 0;
+            }
+            return calculatedConversion;
         }
 
         private async Task LoadCurrencies()
@@ -110,7 +149,6 @@ namespace WexTest.Web.Components.Pages.Purchase
 
         private async Task LoadDataGridData()
         {
-            _isLoading = true;
             var exchangeRate = 1.0m;
             var stopwatch = Stopwatch.StartNew();
             try
@@ -131,7 +169,6 @@ namespace WexTest.Web.Components.Pages.Purchase
             }
             finally
             {
-                _isLoading = false;
                 StateHasChanged();
             }
         }

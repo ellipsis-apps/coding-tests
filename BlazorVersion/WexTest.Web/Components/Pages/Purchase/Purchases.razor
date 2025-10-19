@@ -12,23 +12,52 @@
 		<MudStack Class="justify-space-between mud-width-full">
 			<MudStack Row Style="width: 300px">
 				<MudAutocomplete T="string"
-								 ValueChanged="OnCurrencyChanged"
+								 ValueChanged="OnCurrencyChangedAsync"
 								 SearchFunc="Search"
 								 Variant="Variant.Outlined"
-								 HelperText="Select a Currency for conversion" />
+								 HelperText="Select a Currency for conversion"
+								 ResetValueOnEmptyText="true"/>
 			</MudStack>
 
 			<MudStack Row Style="width:100%;">
 				<MudDataGrid T="ConvertedPurchase"
 							 Items="@PurchaseTransactions"
-							 @ref="_dataGrid">
+				>
 					<Columns>
 						<PropertyColumn Property="x => x.Id" Title="Id" />
 						<PropertyColumn Property="x => x.Description" Title="Description" />
-						<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" />
+						<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Format="d"/>
 						<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" Format="N2" CellStyle="text-align: right;" />
-						<PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" Format="N2" CellStyle="text-align: right;" />
-						<PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" Format="N2" CellStyle="text-align: right;" />
+						<TemplateColumn Title ="Exchange Rate">
+							<CellTemplate>
+								@{
+									if (context.Item.ExchangeRate == 0)
+									{
+										<span style="color:red;">No conversion exists!</span>
+									}
+									else
+									{
+										context.Item.ExchangeRate.ToString("N2");
+									}
+								}
+							</CellTemplate>
+						</TemplateColumn>
+						@* <PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" Format="N2" CellStyle="text-align: right;" /> *@
+						<TemplateColumn Title="Converted Amount">
+							<CellTemplate>
+								@{
+									if (context.Item.ExchangeRate == 0)
+									{
+										<span style="color:red;">No conversion exists!</span>
+									}
+									else
+									{
+										context.Item.ConvertedAmount.ToString("N2");
+									}
+								}
+							</CellTemplate>
+						</TemplateColumn>
+						@* <PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" Format="N2" CellStyle="text-align: right;" /> *@
 					</Columns>
 					<PagerContent>
 						<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20 }" />
