@@ -4,6 +4,13 @@ VisualStudioVersion = 17.8.0.0
 MinimumVisualStudioVersion = 17.8.0.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ellipsis.apps.Web", "ellipsis.apps.Web\ellipsis.apps.Web.csproj", "{BB884548-7072-1E70-53F6-D09F8E45AED7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 Solution Items", "00 Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		dockerfile = dockerfile
+		nginx.conf = nginx.conf
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
