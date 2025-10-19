@@ -1,8 +1,5 @@
 using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 using Blazored.SessionStorage;
 
@@ -25,9 +22,7 @@ namespace WexTest.Web.Components.Pages.Purchase
         [Inject]
         private ISessionStorageService sessionStorageService { get; set; }
 
-        //private MudDataGrid<ConvertedPurchase> _dataGrid = default!;
-        //private bool _isLoading = true;
-        private List<ConvertedPurchase> PurchaseTransactions { get; set; } = new();
+        private List<ConvertedPurchase> GridData { get; set; } = new();
         private List<string> Currencies { get; set; } = new();
         private string SelectedCurrency;
         private List<CurrencyConversionItem> CurrencyConversions { get; set; } = new();
@@ -36,14 +31,17 @@ namespace WexTest.Web.Components.Pages.Purchase
         {
             Console.WriteLine($"Purchases.OnInitializedAsync:: entering");
             await base.OnInitializedAsync();
+
             Console.WriteLine($"Purchases.OnInitializedAsync:: Calling LoadCurrencies");
             await LoadCurrencies();
+
             Console.WriteLine($"Purchases.OnInitializedAsync:: Calling LoadDataGrid");
             await LoadDataGridData();
+
             StateHasChanged();
         }
 
-        private async Task<IEnumerable<string>> Search(string value, CancellationToken cancellationToken)
+        private async Task<IEnumerable<string>> SeearchDropDownList(string value, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -54,42 +52,47 @@ namespace WexTest.Web.Components.Pages.Purchase
 
         private async Task OnCurrencyChangedAsync(string selectedCurrency)
         {
+            Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: entering");
             if (string.IsNullOrEmpty(selectedCurrency))
             {
                 Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: reverting to original txns");
-                PurchaseTransactions = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
-                StateHasChanged();
-                return;
+                GridData = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
             }
-            SelectedCurrency = selectedCurrency;
-            Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: new value:={SelectedCurrency}");
-            try
+            else
             {
-                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: getting conversions for {SelectedCurrency}");
-                CurrencyConversions = await treasuryApiClient.GetCurrencyConversions(SelectedCurrency);
-                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: conversion count:={CurrencyConversions.Count()}");
-                await RecalculateTransactionsAsync(CurrencyConversions);
+                SelectedCurrency = selectedCurrency;
+                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: new value:={SelectedCurrency}");
+                try
+                {
+                    Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: getting conversions for {SelectedCurrency}");
+                    CurrencyConversions = await treasuryApiClient.GetCurrencyConversions(SelectedCurrency);
+                    Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: conversion count:={CurrencyConversions.Count()}");
+                    GridData = await RecalculateTransactionsAsync(CurrencyConversions);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: exception:={ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: exception:={ex.Message}");
-            }
+            //StateHasChanged();
         }
 
-        private async Task RecalculateTransactionsAsync(List<CurrencyConversionItem> currencyConversions)
+        private async Task<List<ConvertedPurchase>> RecalculateTransactionsAsync(List<CurrencyConversionItem> currencyConversions)
         {
             Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: entering");
             // get the originals back
             var orignalTxns = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
             // build a new collection w/ converted values
             var recalculatedTxns = new List<ConvertedPurchase>();
+            var stopwatch = Stopwatch.StartNew();
             foreach (var txn in orignalTxns)
             {
                 var convertedTxn = await ConvertTxn(txn);
                 recalculatedTxns.Add(convertedTxn);
-                Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: convertedTxn:={JsonSerializer.Serialize(convertedTxn)}");
             }
-            PurchaseTransactions = recalculatedTxns;
+            stopwatch.Stop();
+            Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: recalculated {recalculatedTxns.Count()} txns in {stopwatch.ElapsedMilliseconds} msecs");
+            return recalculatedTxns;
         }
 
         private async Task<ConvertedPurchase> ConvertTxn(ConvertedPurchase txn)
@@ -153,19 +156,10 @@ namespace WexTest.Web.Components.Pages.Purchase
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                var originalPurchases = await sessionStorageService.GetItemAsync<List<PurchaseTransaction>>("purchases");
+                var originalPurchases = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
                 stopwatch.Stop();
-                Console.WriteLine($"Purchases.LoadDataGridData:: fetched {originalPurchases.Count()} original purchases in {stopwatch.Elapsed.TotalMilliseconds} msecs");
-                stopwatch.Restart();
-                PurchaseTransactions.Clear();
-                foreach (var purchase in originalPurchases)
-                {
-                    var convertedPurchase = purchase.Adapt<ConvertedPurchase>();
-                    convertedPurchase.ExchangeRate = exchangeRate;
-                    PurchaseTransactions.Add(convertedPurchase);
-                }
-                stopwatch.Stop();
-                Console.WriteLine($"LoadDataGridData:: converted {originalPurchases.Count()} original purchases in {stopwatch.Elapsed.TotalMilliseconds} msecs");
+                Console.WriteLine($"Purchases.LoadDataGridData:: fetched {originalPurchases.Count()} original purchases in {stopwatch.Elapsed.TotalMilliseconds} msecs from session storage");
+                GridData = originalPurchases;
             }
             finally
             {

@@ -1,4 +1,5 @@
 @page "/purchases"
+@using System.Globalization
 @using MudBlazor.Components
 
 <PageTitle>Purchases</PageTitle>
@@ -7,13 +8,13 @@
 <br />
 
 <div style="width:90%">
-	@if (PurchaseTransactions.Any())
+	@if (GridData.Any())
 	{
 		<MudStack Class="justify-space-between mud-width-full">
 			<MudStack Row Style="width: 300px">
 				<MudAutocomplete T="string"
 								 ValueChanged="OnCurrencyChangedAsync"
-								 SearchFunc="Search"
+								 SearchFunc="SeearchDropDownList"
 								 Variant="Variant.Outlined"
 								 HelperText="Select a Currency for conversion"
 								 ResetValueOnEmptyText="true"/>
@@ -21,43 +22,41 @@
 
 			<MudStack Row Style="width:100%;">
 				<MudDataGrid T="ConvertedPurchase"
-							 Items="@PurchaseTransactions"
+							 Items="@GridData"
 				>
 					<Columns>
 						<PropertyColumn Property="x => x.Id" Title="Id" />
 						<PropertyColumn Property="x => x.Description" Title="Description" />
-						<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Format="d"/>
+						<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Format="yyyy-MM-dd"/>
 						<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" Format="N2" CellStyle="text-align: right;" />
-						<TemplateColumn Title ="Exchange Rate">
+						<TemplateColumn Title ="Exchange Rate" CellStyle="text-align: right;">
 							<CellTemplate>
 								@{
-									if (context.Item.ExchangeRate == 0)
+									if (context.Item.ExchangeRate == 0m)
 									{
 										<span style="color:red;">No conversion exists!</span>
 									}
 									else
 									{
-										context.Item.ExchangeRate.ToString("N2");
+										@context.Item.ExchangeRate.ToString("N2");
 									}
 								}
 							</CellTemplate>
 						</TemplateColumn>
-						@* <PropertyColumn Property="x => x.ExchangeRate" Title="Exchange Rate" Format="N2" CellStyle="text-align: right;" /> *@
-						<TemplateColumn Title="Converted Amount">
+						<TemplateColumn Title="Converted Amount" CellStyle="text-align: right;">
 							<CellTemplate>
 								@{
-									if (context.Item.ExchangeRate == 0)
+									if (context.Item.ConvertedAmount == 0m)
 									{
 										<span style="color:red;">No conversion exists!</span>
 									}
 									else
 									{
-										context.Item.ConvertedAmount.ToString("N2");
+										@context.Item.ConvertedAmount.ToString("N2");
 									}
 								}
 							</CellTemplate>
 						</TemplateColumn>
-						@* <PropertyColumn Property="x => x.ConvertedAmount" Title="Converted Amount" Format="N2" CellStyle="text-align: right;" /> *@
 					</Columns>
 					<PagerContent>
 						<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20 }" />
