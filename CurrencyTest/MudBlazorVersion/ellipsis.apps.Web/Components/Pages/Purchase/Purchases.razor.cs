@@ -32,8 +32,12 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             Console.WriteLine($"Purchases.OnInitializedAsync:: entering");
             await base.OnInitializedAsync();
 
-            Console.WriteLine($"Purchases.OnInitializedAsync:: Calling LoadCurrencies");
-            await LoadCurrencies();
+            // Only call LoadCurrencies if not already loaded
+            if (!Currencies.Any())
+            {
+                Console.WriteLine($"Purchases.OnInitializedAsync:: Calling LoadCurrencies");
+                await LoadCurrencies();
+            }
 
             Console.WriteLine($"Purchases.OnInitializedAsync:: Calling LoadDataGrid");
             await LoadDataGridData();
@@ -160,7 +164,7 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
                 Console.WriteLine($"Purchases.LoadDataGridData:: fetched {originalPurchases.Count()} original purchases in {stopwatch.Elapsed.TotalMilliseconds} msecs from session storage");
                 GridData = originalPurchases;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 GridData = new List<ConvertedPurchase>();
             }

@@ -14,7 +14,7 @@ namespace ellipsis.apps.Web.ApiClients
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
-        public async Task<List<string>> GetTreasuryCurrenciesAsync()
+        public virtual async Task<List<string>> GetTreasuryCurrenciesAsync()
         {
             var qryString = $"fields=country_currency_desc&page[number]=1&page[size]=25000";
             var treasuryUrl = $"{_httpClient.BaseAddress}?{qryString}";
@@ -36,7 +36,7 @@ namespace ellipsis.apps.Web.ApiClients
             return elements;
         }
 
-        public async Task<List<CurrencyConversionItem>> GetCurrencyConversions(string currencyConversionDescription)
+        public virtual async Task<List<CurrencyConversionItem>> GetCurrencyConversions(string currencyConversionDescription)
         {
             var qryString = $"filter=country_currency_desc:in:({currencyConversionDescription})&fields=exchange_rate,effective_date&page[number]=1&page[size]=25000";
             var treasuryUrl = $"{_httpClient.BaseAddress}?{qryString}";

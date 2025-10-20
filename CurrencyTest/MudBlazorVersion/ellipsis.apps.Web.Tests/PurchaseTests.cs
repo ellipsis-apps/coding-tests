@@ -10,10 +10,15 @@ using ellipsis.apps.Web.POCOs;
 
 using FluentAssertions;
 
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 
 using Moq;
 using Moq.Protected;
+
+using MudBlazor;
+using MudBlazor.Services;
 
 namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
 {
@@ -45,6 +50,39 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
             // Register as Scoped (better for Bunit renders; avoids singleton disposal leaks)
             Services.AddScoped(_ => _mockTreasuryApiClient.Object);
             Services.AddScoped(_ => _mockSessionStorageService.Object);
+
+            // Add MudBlazor services
+            Services.AddMudServices();
+
+            // Configure bUnit JSInterop for MudBlazor's popover
+            JSInterop.SetupVoid("mudPopover.initialize", _ => true);
+            JSInterop.SetupVoid("mudElementRef.addOnBlurEvent", _ => true);
+            JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
+        }
+
+        private IRenderedComponent<Purchases> RenderPurchasesComponent(Action<ComponentParameterCollectionBuilder<Purchases>>? parameterBuilder = null)
+        {
+            RenderFragment renderFragment = builder =>
+            {
+                builder.OpenComponent<MudPopoverProvider>(0);
+                builder.OpenComponent<Purchases>(1);
+
+                if (parameterBuilder != null)
+                {
+                    // Build parameters for Purchases component
+                    var parameters = new ComponentParameterCollection();
+                    parameterBuilder(new ComponentParameterCollectionBuilder<Purchases>(parameters));
+                    foreach (var param in parameters)
+                    {
+                        builder.AddAttribute(2, param.Name, param.Value);
+                    }
+                }
+
+                builder.CloseComponent();
+                builder.CloseComponent();
+            };
+
+            return RenderComponent<MudPopoverProvider>(renderFragment).FindComponent<Purchases>();
         }
 
 
@@ -144,10 +182,11 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
         public async Task ConvertTxn_WithoutMatchingConversion_Should_SetExchangeRateToZero()
         {
             // Arrange
-            var txn = new ConvertedPurchase { TransactionDate = DateTime.Parse("2025-01-01") };
+            var txn = new ConvertedPurchase { TransactionDate = DateTime.Now.AddMonths(-1) }; // 1 month old
+            var effectiveDate = DateTime.Now.ToString("yyyy-MM-dd"); // effective date of conversion is today
             var conversions = new List<CurrencyConversionItem>
             {
-                new CurrencyConversionItem { EffectiveDate = "2025-10-01", ExchangeRate = "1.1" }
+                new CurrencyConversionItem { EffectiveDate = effectiveDate, ExchangeRate = "1.1" }
             };
 
             var cut = RenderComponent<Purchases>();
@@ -190,7 +229,8 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
                 var cut = RenderComponent<Purchases>();
 
                 // Act
-                await cut.Instance.LoadCurrencies();
+                // Remove explicit call to LoadCurrencies if it's called in OnInitializedAsync
+                // await cut.Instance.LoadCurrencies();
 
                 // Assert
                 cut.Instance.Currencies.Should().BeEquivalentTo(currencies);
@@ -223,7 +263,13 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
             // Arrange
             var purchases = new List<ConvertedPurchase> { new ConvertedPurchase() };
             _mockSessionStorageService.Setup(s => s.GetItemAsync<List<ConvertedPurchase>>("purchases", It.IsAny<CancellationToken>())).ReturnsAsync(purchases);
-            var cut = RenderComponent<Purchases>();
+
+            // Configure JSInterop for MudBlazor
+            JSInterop.SetupVoid("mudPopover.initialize", _ => true);
+            JSInterop.SetupVoid("mudElementRef.addOnBlurEvent", _ => true);
+
+            // Render with helper method
+            var cut = RenderPurchasesComponent();
 
             // Act
             await cut.Instance.LoadDataGridData();
