@@ -1,0 +1,21 @@
+# Build outputs
+bin/
+obj/
+
+# Dependencies (if not needed in context)
+packages/
+node_modules/
+
+# OS/IDE files
+.DS_Store
+.vscode/
+*.user
+*.suo
+
+# Logs and temp files
+*.log
+logs/
+
+# Git
+.git/
+.gitignore

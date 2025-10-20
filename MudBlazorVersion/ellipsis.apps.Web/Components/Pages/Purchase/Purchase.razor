@@ -1,0 +1,39 @@
+@page "/purchase"
+
+<PageTitle>Purchase</PageTitle>
+<h3>Purchase Transaction</h3>
+<h6 style="color:blue;">Enter your purchase transaction.</h6>
+<h6 style="color:blue;">The original transaction amount is always treated as being in USD($)</h6>
+<br />
+
+<EditForm Model="@PurchaseModel" FormName="PurchaseForm" OnValidSubmit="@HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<div Style="gap: 1rem; max-width: 350px">
+		Description:<br />
+		<InputText @bind-Value="@PurchaseModel.Description"
+				   type="text" style="width:100%;border: solid 1px black !important;" />
+		<ValidationMessage For="(() => PurchaseModel.Description)"/>
+		<br /><br />
+
+		Date:<br/>
+		<InputDate @bind-Value="@PurchaseModel.TransactionDate"
+				   style="width:50%;border: solid 1px black !important;"
+				   Max="@DateTime.Today" />
+		<ValidationMessage For="(() => PurchaseModel.TransactionDate)" />
+		<br />
+		<br />
+
+		Amount(USD):<br />
+		<MudNumericField @bind-Value="@PurchaseModel.PurchaseAmount"
+					 Format="N2"
+					 style="width: 50%;border: solid 1px black !important;" />
+		<ValidationMessage For="(() => PurchaseModel.PurchaseAmount)" />
+		<br />
+		<br />
+
+		<!-- Submit Button -->
+		<div style="margin-bottom: 20px; align-content: center;">
+			<button class="btn btn-primary" type="submit">Submit</button>
+		</div>
+	</div>
+</EditForm>
