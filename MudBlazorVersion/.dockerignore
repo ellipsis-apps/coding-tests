@@ -1,21 +1,12 @@
-# Build outputs
-bin/
-obj/
+# Dependency directories
+**/bin/
+**/obj/
 
-# Dependencies (if not needed in context)
-packages/
-node_modules/
-
-# OS/IDE files
+# Other noise
+**/.git/
+**/.vs/
+**/packages/
+**/*.user
+**/*.suo
+**/*.sln.docstates
 .DS_Store
-.vscode/
-*.user
-*.suo
-
-# Logs and temp files
-*.log
-logs/
-
-# Git
-.git/
-.gitignore
