@@ -60,30 +60,30 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
             JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         }
 
-        private IRenderedComponent<Purchases> RenderPurchasesComponent(Action<ComponentParameterCollectionBuilder<Purchases>>? parameterBuilder = null)
-        {
-            RenderFragment renderFragment = builder =>
-            {
-                builder.OpenComponent<MudPopoverProvider>(0);
-                builder.OpenComponent<Purchases>(1);
+        //private IRenderedComponent<Purchases> RenderPurchasesComponent(Action<ComponentParameterCollectionBuilder<Purchases>>? parameterBuilder = null)
+        //{
+        //    RenderFragment renderFragment = builder =>
+        //    {
+        //        builder.OpenComponent<MudPopoverProvider>(0);
+        //        builder.OpenComponent<Purchases>(1);
 
-                if (parameterBuilder != null)
-                {
-                    // Build parameters for Purchases component
-                    var parameters = new ComponentParameterCollection();
-                    parameterBuilder(new ComponentParameterCollectionBuilder<Purchases>(parameters));
-                    foreach (var param in parameters)
-                    {
-                        builder.AddAttribute(2, param.Name, param.Value);
-                    }
-                }
+        //        if (parameterBuilder != null)
+        //        {
+        //            // Build parameters for Purchases component
+        //            var parameters = new ComponentParameterCollection();
+        //            parameterBuilder(new ComponentParameterCollectionBuilder<Purchases>(parameters));
+        //            foreach (var param in parameters)
+        //            {
+        //                builder.AddAttribute(2, param.Name, param.Value);
+        //            }
+        //        }
 
-                builder.CloseComponent();
-                builder.CloseComponent();
-            };
+        //        builder.CloseComponent();
+        //        builder.CloseComponent();
+        //    };
 
-            return RenderComponent<MudPopoverProvider>(renderFragment).FindComponent<Purchases>();
-        }
+        //    return RenderComponent<MudPopoverProvider>(renderFragment).FindComponent<Purchases>();
+        //}
 
 
         [Theory]
@@ -269,7 +269,7 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
             JSInterop.SetupVoid("mudElementRef.addOnBlurEvent", _ => true);
 
             // Render with helper method
-            var cut = RenderPurchasesComponent();
+            var cut =  RenderComponent<Purchases>();
 
             // Act
             await cut.Instance.LoadDataGridData();
