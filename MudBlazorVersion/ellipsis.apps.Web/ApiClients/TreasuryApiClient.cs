@@ -6,15 +6,21 @@ using ellipsis.apps.Web.POCOs;
 
 namespace ellipsis.apps.Web.ApiClients
 {
-    public class TreasuryApiClient(HttpClient httpClient)
+    public class TreasuryApiClient
     {
+        private readonly HttpClient _httpClient;
+        public TreasuryApiClient(HttpClient httpClient)
+        {
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        }
+
         public async Task<List<string>> GetTreasuryCurrenciesAsync()
         {
             var qryString = $"fields=country_currency_desc&page[number]=1&page[size]=25000";
-            var treasuryUrl = $"{httpClient.BaseAddress}?{qryString}";
+            var treasuryUrl = $"{_httpClient.BaseAddress}?{qryString}";
             Console.WriteLine($"GetTreasuryCurrenciesAsync.treasuryUrl:={treasuryUrl}");
             var stopwatch = Stopwatch.StartNew();
-            var response = await httpClient.GetAsync(treasuryUrl);
+            var response = await _httpClient.GetAsync(treasuryUrl);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
             var responseData = System.Text.Json.JsonSerializer.Deserialize<CountryCurrencyResponse>(responseJson);
@@ -33,10 +39,10 @@ namespace ellipsis.apps.Web.ApiClients
         public async Task<List<CurrencyConversionItem>> GetCurrencyConversions(string currencyConversionDescription)
         {
             var qryString = $"filter=country_currency_desc:in:({currencyConversionDescription})&fields=exchange_rate,effective_date&page[number]=1&page[size]=25000";
-            var treasuryUrl = $"{httpClient.BaseAddress}?{qryString}";
+            var treasuryUrl = $"{_httpClient.BaseAddress}?{qryString}";
             Console.WriteLine($"GetTreasuryCurrenciesAsync.treasuryUrl:={treasuryUrl}");
             var stopwatch = Stopwatch.StartNew();
-            var response = await httpClient.GetAsync(treasuryUrl);
+            var response = await _httpClient.GetAsync(treasuryUrl);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
             var responseData = System.Text.Json.JsonSerializer.Deserialize<CurrencyConversionResponse>(responseJson);
@@ -51,4 +57,6 @@ namespace ellipsis.apps.Web.ApiClients
             return conversions;
         }
     }
+
+
 }

@@ -17,15 +17,15 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
     public partial class Purchases : ComponentBase
     {
         [Inject]
-        private TreasuryApiClient treasuryApiClient { get; set; } = default!;
+        public TreasuryApiClient TreasuryApiClient { get; set; }
 
         [Inject]
-        private ISessionStorageService sessionStorageService { get; set; }
+        public ISessionStorageService SessionStorageService { get; set; }
 
-        private List<ConvertedPurchase> GridData { get; set; } = new();
-        private List<string> Currencies { get; set; } = new();
-        private string SelectedCurrency;
-        private List<CurrencyConversionItem> CurrencyConversions { get; set; } = new();
+        public List<ConvertedPurchase> GridData { get; set; } = new();
+        public List<string> Currencies { get; set; } = new();
+        public string SelectedCurrency;
+        public List<CurrencyConversionItem> CurrencyConversions { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -41,7 +41,7 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             StateHasChanged();
         }
 
-        private async Task<IEnumerable<string>> SeearchDropDownList(string value, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> SearchDropDownList(string value, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -50,13 +50,13 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             return Currencies.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private async Task OnCurrencyChangedAsync(string selectedCurrency)
+        public async Task OnCurrencyChangedAsync(string selectedCurrency)
         {
             Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: entering");
             if (string.IsNullOrEmpty(selectedCurrency))
             {
                 Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: reverting to original txns");
-                GridData = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
+                GridData = await SessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
             }
             else
             {
@@ -65,7 +65,7 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
                 try
                 {
                     Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: getting conversions for {SelectedCurrency}");
-                    CurrencyConversions = await treasuryApiClient.GetCurrencyConversions(SelectedCurrency);
+                    CurrencyConversions = await TreasuryApiClient.GetCurrencyConversions(SelectedCurrency);
                     Console.WriteLine($"Purchases.OnCurrencyChangedAsync:: conversion count:={CurrencyConversions.Count()}");
                     GridData = await RecalculateTransactionsAsync(CurrencyConversions);
                 }
@@ -77,11 +77,11 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             //StateHasChanged();
         }
 
-        private async Task<List<ConvertedPurchase>> RecalculateTransactionsAsync(List<CurrencyConversionItem> currencyConversions)
+        public async Task<List<ConvertedPurchase>> RecalculateTransactionsAsync(List<CurrencyConversionItem> currencyConversions)
         {
             Console.WriteLine($"Purchases.RecalculateTransactionsAsync:: entering");
             // get the originals back
-            var orignalTxns = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
+            var orignalTxns = await SessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
             // build a new collection w/ converted values
             var recalculatedTxns = new List<ConvertedPurchase>();
             var stopwatch = Stopwatch.StartNew();
@@ -95,7 +95,7 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             return recalculatedTxns;
         }
 
-        private async Task<ConvertedPurchase> ConvertTxn(ConvertedPurchase txn)
+        public async Task<ConvertedPurchase> ConvertTxn(ConvertedPurchase txn)
         {
             var calculatedConversion = txn.Adapt<ConvertedPurchase>();
             var conversion = CurrencyConversions.Where(p =>
@@ -113,13 +113,13 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             return calculatedConversion;
         }
 
-        private async Task LoadCurrencies()
+        public async Task LoadCurrencies()
         {
             Console.WriteLine($"Purchases.LoadCurrencies:: entering");
             try
             {
-                await sessionStorageService.ContainKeyAsync("currencies");
-                Currencies = await sessionStorageService.GetItemAsync<List<string>>("currencies");
+                await SessionStorageService.ContainKeyAsync("currencies");
+                Currencies = await SessionStorageService.GetItemAsync<List<string>>("currencies");
                 if (Currencies.Count() == 0)
                 {
                     await LoadTreasuryCurrencies();
@@ -132,16 +132,16 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             }
         }
 
-        private async Task LoadTreasuryCurrencies()
+        public async Task LoadTreasuryCurrencies()
         {
             Console.WriteLine($"Purchases.LoadTreasuryCurrencies:: entering");
-            var currencies = await treasuryApiClient.GetTreasuryCurrenciesAsync();
+            var currencies = await TreasuryApiClient.GetTreasuryCurrenciesAsync();
             try
             {
                 if (currencies != null)
                 {
                     Currencies = currencies;
-                    await sessionStorageService.SetItemAsync("currencies", Currencies);
+                    await SessionStorageService.SetItemAsync("currencies", Currencies);
                 }
             }
             catch (Exception ex)
@@ -150,16 +150,19 @@ namespace ellipsis.apps.Web.Components.Pages.Purchase
             }
         }
 
-        private async Task LoadDataGridData()
+        public async Task LoadDataGridData()
         {
-            var exchangeRate = 1.0m;
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                var originalPurchases = await sessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
+                var originalPurchases = await SessionStorageService.GetItemAsync<List<ConvertedPurchase>>("purchases");
                 stopwatch.Stop();
                 Console.WriteLine($"Purchases.LoadDataGridData:: fetched {originalPurchases.Count()} original purchases in {stopwatch.Elapsed.TotalMilliseconds} msecs from session storage");
                 GridData = originalPurchases;
+            }
+            catch(Exception ex)
+            {
+                GridData = new List<ConvertedPurchase>();
             }
             finally
             {

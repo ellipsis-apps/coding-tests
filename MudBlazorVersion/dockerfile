@@ -1,29 +1,26 @@
-# Stage 1: Build the app using .NET SDK
+# Stage 1: Build and publish the Blazor WASM app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR "/src"
+WORKDIR /src
 
-# Copy csproj and restore (caches layers for faster rebuilds)
-COPY ["ellipsis.apps.Web/ellipsis.apps.Web.csproj", "."]
-RUN dotnet restore "ellipsis.apps.Web.csproj"
+# Copy csproj and restore dependencies
+COPY ellipsis.apps.Web/*.csproj ./ellipsis.apps.Web/
+RUN dotnet restore ./ellipsis.apps.Web/ellipsis.apps.Web.csproj
 
-# Copy source and build
-COPY "ellipsis.apps.Web" .
-WORKDIR "/src"
-#RUN dotnet build "ellipsis.apps.Web.csproj" -c Release -o /app/build
-RUN dotnet publish "ellipsis.apps.Web.csproj" -c Release -o /app/publish 
+# Copy everything else and publish
+COPY . .
+WORKDIR /src/ellipsis.apps.Web
+RUN dotnet publish -c Release -o /app/publish
+RUN ls -lR /app/publish
 
-# Publish static files (UseAppHost=false skips server host for standalone WASM)
-FROM build AS publish
-RUN dotnet publish "ellipsis.apps.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
-#RUN dotnet publish "ellipsis.apps.Web.csproj" -c Release -o /app/publish --self-contained false -r linux-x64 /p:PublishTrimmed=false /p:ScopedCssEnabled=true /p:DisableScopedCssBundling=false
-RUN ls -la /usr/share/nginx/html && echo "Files copied successfully!"
 # Stage 2: Serve with Nginx
 FROM nginx:alpine AS final
-EXPOSE 80
+WORKDIR /usr/share/nginx/html
 
-# Copy published wwwroot to Nginx's static file dir
-WORKDIR /nginx/html
-COPY --from=publish /app/publish/wwwroot .
+# Remove default nginx static assets
+RUN rm -rf ./*
 
-# Copy custom Nginx config for SPA routing
-COPY nginx.conf /nginx/conf/nginx.conf
+# Copy published Blazor WASM files
+COPY --from=build /app/publish/wwwroot .
+
+# Copy custom nginx config (see below)
+COPY nginx.conf /etc/nginx/ngnix.conf
