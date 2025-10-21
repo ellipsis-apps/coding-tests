@@ -60,31 +60,6 @@ namespace ellipsis.apps.Web.Tests.Components.Pages.Purchase
             JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         }
 
-        //private IRenderedComponent<Purchases> RenderPurchasesComponent(Action<ComponentParameterCollectionBuilder<Purchases>>? parameterBuilder = null)
-        //{
-        //    RenderFragment renderFragment = builder =>
-        //    {
-        //        builder.OpenComponent<MudPopoverProvider>(0);
-        //        builder.OpenComponent<Purchases>(1);
-
-        //        if (parameterBuilder != null)
-        //        {
-        //            // Build parameters for Purchases component
-        //            var parameters = new ComponentParameterCollection();
-        //            parameterBuilder(new ComponentParameterCollectionBuilder<Purchases>(parameters));
-        //            foreach (var param in parameters)
-        //            {
-        //                builder.AddAttribute(2, param.Name, param.Value);
-        //            }
-        //        }
-
-        //        builder.CloseComponent();
-        //        builder.CloseComponent();
-        //    };
-
-        //    return RenderComponent<MudPopoverProvider>(renderFragment).FindComponent<Purchases>();
-        //}
-
 
         [Fact]
         public async Task ConvertTxn_WithMatchingConversion_Should_SetExchangeRate()
