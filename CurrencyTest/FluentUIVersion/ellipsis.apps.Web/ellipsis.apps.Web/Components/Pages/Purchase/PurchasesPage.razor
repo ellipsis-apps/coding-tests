@@ -1,0 +1,77 @@
+@page "/purchases"
+@using System.Globalization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<PageTitle>Purchases</PageTitle>
+<h3>Purchases</h3>
+<h6 style="color:blue;">Select a currency to see the converted purchase amount.</h6>
+<h6 style="color:blue;">There may be no existing conversion rates for some transaction date/currency combinations.</h6>
+<br />
+
+<div style="width:90%">
+	@if (GridData.Any())
+	{
+		<FluentStack VerticalAlignment="VerticalAlignment.Top" Class="justify-space-between mud-width-full">
+			<FluentStack HorizontalAlignment="HorizontalAlignment.Start" Style="width: 300px">
+				<FluentAutocomplete TOption="string"
+									@bind-Value="SelectedCurrency"
+									AutoComplete="on"
+									OnOptionsSearch="@(async (args) => await SearchDropDownList(args))"
+									MaximumOptionsSearch="7"
+									Width="100%"
+									Label="Select a Currency for conversion"
+				/>
+			</FluentStack>
+
+			<FluentStack HorizontalAlignment="HorizontalAlignment.Start">
+				@* <FluentDataGrid Items="@GridData.AsQueryable()" Pagination="@pagination">
+					<PropertyColumn Property="x => x.Id" Title="Id" />
+					<PropertyColumn Property="x => x.Description" Title="Description" />
+					<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Format="yyyy-MM-dd" />
+					<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" Format="N2" CellStyle="text-align: right;" />
+					<TemplateColumn Title="Exchange Rate">
+						<div style="text-align: end;">
+							@{
+								if (context.ExchangeRate == 0m)
+								{
+									<span style="color:red;">No conversion exists!</span>
+								}
+								else
+								{
+									@context.ExchangeRate.ToString("N2")
+									;
+								}
+							}
+						</div>
+					</TemplateColumn>
+					<TemplateColumn Title="Converted Amount">
+						<div>
+							@{
+								if (context.ConvertedAmount == 0m)
+								{
+									<span style="color:red;">No conversion exists!</span>
+								}
+								else
+								{
+									@context.ConvertedAmount.ToString("N2")
+									;
+								}
+							}
+						</div>
+					</TemplateColumn>
+					<FluentPaginator State="@pagination" />
+				</FluentDataGrid> *@
+			</FluentStack>
+		</FluentStack>
+	}
+	else
+	{
+		<h3 style="color: red;">No purchases found!</h3>
+	}
+</div>
+
+<!-- Manual test buttons -->
+@* <div>
+		<MudButton OnClick="TestPageChange" Color="Color.Primary">Test: Go to Page 2</MudButton>
+		<MudButton OnClick="TestPageSizeChange" Color="Color.Secondary">Test: Change Page Size</MudButton>
+	</div>*@

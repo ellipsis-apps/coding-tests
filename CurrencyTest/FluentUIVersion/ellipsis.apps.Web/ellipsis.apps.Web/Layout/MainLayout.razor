@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentAppBar/>
+<FluentMenuProvider />
+
+<FluentMainLayout NavMenuTitle="Navigation menu">
+    <Header>
+        <h3>Currency Test</h3>
+    </Header>
+
+    <SubHeader>
+        <p>Implemented using FluentUI</p>
+    </SubHeader>
+
+	<NavMenuContent>
+		<div style="display:flex; flex-direction:column; height:100%;">
+			<FluentNavLink Href="/" Text="Home">Home</FluentNavLink>
+			<FluentNavLink Href="/purchase" Text="Purchase">Purchase</FluentNavLink>
+			<FluentNavLink Href="/purchases" Text="Purchases">Purchases</FluentNavLink>
+		</div>
+	</NavMenuContent>
+
+	<Body>
+		<div style="border-left:1px solid #ccc; padding-left:1rem; height:100%;">
+			@Body
+		</div>
+	</Body>
+
+</FluentMainLayout>
