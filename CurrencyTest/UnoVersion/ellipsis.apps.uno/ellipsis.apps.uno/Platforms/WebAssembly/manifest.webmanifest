@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "ellipsis.apps.uno",
+  "display": "standalone",
+  "name": "ellipsis.apps.uno",
+  "short_name": "ellipsis.apps.uno",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

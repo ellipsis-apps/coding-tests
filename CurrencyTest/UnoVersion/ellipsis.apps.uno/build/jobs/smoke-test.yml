@@ -1,0 +1,17 @@
+jobs:
+- job: smoke_test
+  displayName: Smoke Test (Debug Build of ellipsis.apps.uno)
+  pool:
+    vmImage: $(windowsAgent)
+  steps:
+    - checkout: self
+      fetchDepth: 0
+
+    - template: ../steps/install-dependencies.yml
+      parameters:
+        targetPlatform: 'wasm'
+
+    - task: MSBuild@1
+      inputs:
+        solution: ./ellipsis.apps.uno/ellipsis.apps.uno.csproj
+        msbuildArguments: '/r'
