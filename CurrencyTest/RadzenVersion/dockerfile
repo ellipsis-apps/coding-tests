@@ -1,0 +1,26 @@
+# Stage 1: Build and publish the Blazor WASM app
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy csproj and restore dependencies
+COPY ellipsis.apps.Web/*.csproj ./ellipsis.apps.Web/
+RUN dotnet restore ./ellipsis.apps.Web/ellipsis.apps.Web.csproj
+
+# Copy everything else and publish
+COPY . .
+WORKDIR /src/ellipsis.apps.Web
+RUN dotnet publish -c Release -o /app/publish
+RUN ls -lR /app/publish
+
+# Stage 2: Serve with Nginx
+FROM nginx:alpine AS final
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static assets
+RUN rm -rf ./*
+
+# Copy published Blazor WASM files
+COPY --from=build /app/publish/wwwroot .
+
+# Copy custom nginx config (see below)
+COPY nginx.conf /etc/nginx/ngnix.conf

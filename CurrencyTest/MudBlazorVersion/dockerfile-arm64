@@ -1,0 +1,15 @@
+# Stage 1: Build and publish the Blazor WASM app
+# Build stage
+FROM --platform=linux/arm64 mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy csproj and restore dependencies
+COPY ellipsis.apps.Web/*.csproj ./ellipsis.apps.Web/
+RUN dotnet restore ./ellipsis.apps.Web/ellipsis.apps.Web.csproj
+
+# Copy everything else and publish
+COPY . .
+WORKDIR /src/ellipsis.apps.Web
+RUN ls -lR $WORKDIR
+RUN dotnet publish -c Release -o C:\publish\tests\MudBlazorVersion-arm64
+RUN ls -lR C:\publish\tests\MudBlazorVersion-arm64

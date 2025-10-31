@@ -1,0 +1,68 @@
+﻿<Page x:Class="ellipsis.apps.uno.Presentation.MainPage"
+      Loaded="Page_Loaded"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:ellipsis.apps.uno.Presentation"
+      xmlns:uen="using:Uno.Extensions.Navigation.UI"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      xmlns:um="using:Uno.Material"
+      xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+      NavigationCacheMode="Required"
+      Background="{ThemeResource BackgroundBrush}">
+
+    <Grid Padding="50">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" ></RowDefinition>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Spacing="15">
+            <!-- Form -->
+            <TextBox Header="Description" Text="{Binding Description, Mode=TwoWay}" />
+            <NumberBox Header="Purchase Amount" Value="{Binding PurchaseAmount, Mode=TwoWay}" />
+            <DatePicker Header="Transaction Date"
+                        Date="{Binding TransactionDate, Mode=TwoWay}"
+                        MinYear="{Binding MinYear}"
+                        MaxYear="{Binding Today}"
+                        HorizontalAlignment="Left"/>
+            <Button Content="Add Entry" Command="{Binding AddCommand}" />
+        </StackPanel>
+
+        <!-- Spacer -->
+        <Rectangle Grid.Row="1" Height="20" Fill="Transparent"/>
+
+        <AutoSuggestBox Grid.Row="2"
+                        Margin="0, 10, 0, 10"
+                        Width="250"
+                        HorizontalAlignment="Left"
+                        PlaceholderText="Select a currency"
+                        Text="{Binding SelectedCurrency, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ItemsSource="{Binding FilteredCurrencies}"
+        />
+
+        <!-- Data Grid -->
+        <toolkit:DataGrid Grid.Row="3" ItemsSource="{Binding Purchases}" AutoGenerateColumns="False" Height="300">
+            <toolkit:DataGrid.Columns>
+                <toolkit:DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                <toolkit:DataGridTextColumn Header="Txn Date" Binding="{Binding TransactionDate}" />
+                <toolkit:DataGridTextColumn Header="Purchase Amount" Binding="{Binding PurchaseAmount}" />
+                <toolkit:DataGridTextColumn Header="Exchange Rate" Binding="{Binding ExchangeRate}" />
+                <toolkit:DataGridTextColumn Header="Converted Amount" Binding="{Binding ConvertedAmount}" />
+            </toolkit:DataGrid.Columns>
+        </toolkit:DataGrid>
+
+        <!-- Attach behaviors to forward events to commands -->
+        <interactivity:Interaction.Behaviors>
+            <core:EventTriggerBehavior EventName="TextChanged">
+                <core:InvokeCommandAction Command="{Binding CurrencyChangedCommand}" />
+            </core:EventTriggerBehavior>
+            <core:EventTriggerBehavior EventName="SuggestionChosen">
+                <core:InvokeCommandAction Command="{Binding CurrencyChosenCommand}" />
+            </core:EventTriggerBehavior>
+        </interactivity:Interaction.Behaviors>
+    </Grid>
+</Page>

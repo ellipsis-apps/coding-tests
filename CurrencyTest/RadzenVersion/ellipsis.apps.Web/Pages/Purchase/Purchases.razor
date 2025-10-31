@@ -1,0 +1,83 @@
+@page "/purchases"
+@using System.Globalization
+@using Radzen.Blazor
+
+<PageTitle>Purchases</PageTitle>
+<h3>Purchases</h3>
+<h6 style="color:blue;">Select a currency to see the converted purchase amount.</h6>
+<h6 style="color:blue;">There may be no existing conversion rates for some transaction date/currency combinations.</h6>
+<br />
+
+<div style="width:90%">
+	@if (GridData.Any())
+	{
+		<RadzenStack Class="justify-space-between mud-width-full">
+			<RadzenStack Row Style="width: 300px">
+				<RadzenAutoComplete @bind-Value="@SelectedCurrency"
+									Data="@Currencies"
+									Style="width: 13rem"
+									InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "Currency Name" } })"
+									Placeholder="Select a currency..."
+									Change="@(args => OnCurrencyChangedAsync(args))" />
+			</RadzenStack>
+
+			<RadzenStack Row Style="width:100%;">
+				<RadzenDataGrid Data="@GridData"
+								PageSize="5"
+								AllowPaging="true"
+								PagerHorizontalAlign="HorizontalAlign.Right"
+								ShowPagingSummary="true">
+					<EmptyTemplate>
+						<p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+					</EmptyTemplate>
+					<Columns>
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="Id" Title="Id" />
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="Description" Title="Description" />
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="TransactionDate" Title="Transaction Date">
+							<Template Context="row">
+								<span>@row.TransactionDate.ToString("yyyy-MM-dd")</span>
+							</Template>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="PurchaseAmount" Title="Purchase Amount" FormatString="{0:C}" TextAlign="TextAlign.Right" />
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="ExchangeRate" Title="Exchange Rate" TextAlign="TextAlign.Right">
+							<Template Context="row">
+								@{
+									if (@row.ExchangeRate == 0m)
+									{
+											<span style="color:red;">No conversion exists!</span>
+									}
+									else
+									{
+										<div style="text-align:right; width:100%;">
+											@row.ExchangeRate.ToString("N2")
+										</div>
+									}
+								}
+							</Template>
+						</RadzenDataGridColumn>
+						<RadzenDataGridColumn TItem="ConvertedPurchase" Property="ConvertedAmount" Title="Converted Amount" TextAlign="TextAlign.Right">
+							<Template Context="row">
+								@{
+									if (@row.ConvertedAmount == 0m)
+									{
+										<span style="color:red;">No conversion exists!</span>
+									}
+									else
+									{
+										<div style="text-align:right; width:100%;">
+											@row.ConvertedAmount.ToString("C")
+										</div>
+									}
+								}
+							</Template>
+						</RadzenDataGridColumn>
+					</Columns>
+				</RadzenDataGrid>
+			</RadzenStack>
+		</RadzenStack>
+	}
+	else
+	{
+		<h3 style="color: red;">No purchases found!</h3>
+	}
+</div>

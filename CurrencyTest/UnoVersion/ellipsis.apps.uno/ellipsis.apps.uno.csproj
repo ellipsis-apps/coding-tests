@@ -1,0 +1,72 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net10.0-android36.1;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
+        <EnablePreviewFeatures>true</EnablePreviewFeatures>
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+
+        <!-- Display name -->
+        <ApplicationTitle>ellipsis.apps.uno</ApplicationTitle>
+        <!-- App Identifier -->
+        <ApplicationId>com.companyname.ellipsis-apps-uno</ApplicationId>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <!-- Package Publisher -->
+        <ApplicationPublisher>ellipsis.apps.uno</ApplicationPublisher>
+        <!-- Package Description -->
+        <Description>ellipsis.apps.uno powered by Uno Platform.</Description>
+
+        <!--
+      UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
+      https://aka.platform.uno/singleproject-features
+    -->
+        <UnoFeatures>
+            Material;
+            Dsp;
+            Hosting;
+            Toolkit;
+            Logging;
+            MVUX;
+            Configuration;
+            HttpKiota;
+            Serialization;
+            Localization;
+            Navigation;
+            ThemeService;
+            SkiaRenderer;
+        </UnoFeatures>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug' or '$(IsUiAutomationMappingEnabled)'=='True'">
+        <IsUiAutomationMappingEnabled>True</IsUiAutomationMappingEnabled>
+        <DefineConstants>$(DefineConstants);USE_UITESTS</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.ComponentModel.Annotations" />
+      <PackageReference Include="Uno.CommunityToolkit.WinUI.UI.Controls" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="appsettings.development.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="GlobalUsings.cs">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="appsettings.development.json" />
+    </ItemGroup>
+
+</Project>

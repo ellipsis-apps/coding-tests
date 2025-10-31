@@ -1,0 +1,12 @@
+# Dependency directories
+**/bin/
+**/obj/
+
+# Other noise
+**/.git/
+**/.vs/
+**/packages/
+**/*.user
+**/*.suo
+**/*.sln.docstates
+.DS_Store
