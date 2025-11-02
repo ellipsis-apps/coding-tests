@@ -416,3 +416,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Solutions I don't want yet
+**/CurrencyTest/RadzenVersion/
+**/CurrencyTest/UnoVersion/
