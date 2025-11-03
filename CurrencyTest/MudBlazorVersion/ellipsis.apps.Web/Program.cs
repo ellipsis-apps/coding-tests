@@ -21,7 +21,7 @@ public class Program
         Console.WriteLine($"Main:: TreasuryApiAddress:={TreasuryApiAddress}");
         builder.Services.AddMudServices();
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(TreasuryApiAddress) });
-        builder.Services.AddScoped<TreasuryApiClient>();
+        builder.Services.AddScoped<ITreasuryApiClient, TreasuryApiClient>();
         await builder.Build().RunAsync();
     }
 }
