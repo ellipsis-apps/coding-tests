@@ -9,10 +9,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Components\Pages\Purchase\Purchases.razor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Remove="appsettings.Development.json" />
         <Content Remove="appsettings.json" />
         <Content Remove="Components\Pages\Counter.razor" />
         <Content Remove="Components\Pages\Error.razor" />
+        <Content Remove="Components\Pages\Purchase\Purchases.razor" />
         <Content Remove="Components\Pages\Weather.razor" />
     </ItemGroup>
 

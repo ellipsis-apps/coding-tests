@@ -6,7 +6,7 @@ using ellipsis.apps.Web.POCOs;
 
 namespace ellipsis.apps.Web.ApiClients
 {
-    public class TreasuryApiClient
+    public class TreasuryApiClient : ITreasuryApiClient
     {
         private readonly HttpClient _httpClient;
         public TreasuryApiClient(HttpClient httpClient)

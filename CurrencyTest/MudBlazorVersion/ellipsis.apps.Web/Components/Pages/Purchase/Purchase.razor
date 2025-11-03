@@ -12,10 +12,10 @@
 		Description:<br />
 		<InputText @bind-Value="@PurchaseModel.Description"
 				   type="text" style="width:100%;border: solid 1px black !important;" />
-		<ValidationMessage For="(() => PurchaseModel.Description)"/>
+		<ValidationMessage For="(() => PurchaseModel.Description)" />
 		<br /><br />
 
-		Date:<br/>
+		Date:<br />
 		<InputDate @bind-Value="@PurchaseModel.TransactionDate"
 				   style="width:50%;border: solid 1px black !important;"
 				   Max="@DateTime.Today" />
@@ -25,8 +25,8 @@
 
 		Amount(USD):<br />
 		<MudNumericField @bind-Value="@PurchaseModel.PurchaseAmount"
-					 Format="N2"
-					 style="width: 50%;border: solid 1px black !important;" />
+						 Format="N2"
+						 style="width: 50%;border: solid 1px black !important;" />
 		<ValidationMessage For="(() => PurchaseModel.PurchaseAmount)" />
 		<br />
 		<br />
@@ -37,3 +37,69 @@
 		</div>
 	</div>
 </EditForm>
+
+<MudStack style="width:90%">
+	<MudStack Class="justify-space-between mud-width-full">
+		<MudStack Row Style="width: 300px">
+			<MudAutocomplete T="string"
+							 ValueChanged="OnCurrencyChangedAsync"
+							 SearchFunc="SearchDropDownList"
+							 Variant="Variant.Outlined"
+							 HelperText="Select a Currency for conversion"
+							 ResetValueOnEmptyText="true" />
+		</MudStack>
+		<MudStack>
+			@if (GridData.Any())
+			{
+				<MudStack Row Style="width:100%;">
+					<MudDataGrid T="ConvertedPurchase"
+								 Items="@GridData">
+						<Columns>
+							<PropertyColumn Property="x => x.Id" Title="Id" />
+							<PropertyColumn Property="x => x.Description" Title="Description" />
+							<PropertyColumn Property="x => x.TransactionDate" Title="Transaction Date" Format="yyyy-MM-dd" />
+							<PropertyColumn Property="x => x.PurchaseAmount" Title="Purchase Amount" Format="N2" CellStyle="text-align: right;" />
+							<TemplateColumn Title="Exchange Rate" CellStyle="text-align: right;">
+								<CellTemplate>
+									@{
+										if (context.Item.ExchangeRate == 0m)
+										{
+											<span style="color:red;">No conversion exists!</span>
+										}
+										else
+										{
+											@context.Item.ExchangeRate.ToString("N2")
+											;
+										}
+									}
+								</CellTemplate>
+							</TemplateColumn>
+							<TemplateColumn Title="Converted Amount" CellStyle="text-align: right;">
+								<CellTemplate>
+									@{
+										if (context.Item.ConvertedAmount == 0m)
+										{
+											<span style="color:red;">No conversion exists!</span>
+										}
+										else
+										{
+											@context.Item.ConvertedAmount.ToString("N2")
+											;
+										}
+									}
+								</CellTemplate>
+							</TemplateColumn>
+						</Columns>
+						<PagerContent>
+							<MudDataGridPager T="ConvertedPurchase" PageSizeOptions="new int[] { 5, 10, 20 }" />
+						</PagerContent>
+					</MudDataGrid>
+				</MudStack>
+			}
+			else
+			{
+				<h3 style="color: red;">No purchases found!</h3>
+			}
+		</MudStack>
+	</MudStack>
+</MudStack>
