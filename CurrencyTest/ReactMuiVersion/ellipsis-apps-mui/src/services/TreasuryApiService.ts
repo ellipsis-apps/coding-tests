@@ -24,9 +24,9 @@ export async function getTreasuryConversionsAsync(
     // log.debug(`getTreasuryConversionsAsync::currency_conv_desc: ${currency_conv_desc}`);
     if (currency_conv_desc && currency_conv_desc.trim() !== "") {
         const apiEndpoint = `${Constants.API_BASE_URL}?filter=country_currency_desc:in:(${currency_conv_desc})&fields=exchange_rate,effective_date&page[number]=1&page[size]=25000`;
-        log.info(`getTreasuryConversionsAsync::cFetching currency conversions from ${apiEndpoint}`);
+        log.info(`getTreasuryConversionsAsync::Fetching currency conversions from ${apiEndpoint}`);
         const response: AxiosResponse<CurrencyConversionResponse> = await axios.get<CurrencyConversionResponse>(apiEndpoint);
-        log.info(`getTreasuryConversionsAsync::found currency conversions: ${JSON.stringify(response.data)}`);
+        log.debug(`getTreasuryConversionsAsync::found currency conversions: ${JSON.stringify(response.data)}`);
         return response.data.data;
     }
     return [];

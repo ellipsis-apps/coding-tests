@@ -72,7 +72,7 @@ export default function PurchasePage() {
                 const currencyList = data.map(
                     (item) => item.country_currency_desc
                 );
-                // log.info("Fetched currencies:", currencyList);
+                // log.debug("Fetched currencies:", currencyList);
                 setCurrencies(currencyList);
             } catch (err) {
                 log.error("Failed to fetch currencies", err);

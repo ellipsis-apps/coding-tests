@@ -20,7 +20,7 @@ type TransactionTableProps = {
 };
 
 export default function TransactionTable({ selectedCurrency }: TransactionTableProps) {
-    log.info("TransactionTable selectedCurrency:", selectedCurrency);
+    // log.info("TransactionTable selectedCurrency:", selectedCurrency);
     const [convertedRows, setConvertedRows] = useState<Array<PurchaseTransaction>>([]);
     const [conversionRates, setConversionRates] = useState<Array<CurrencyConversionItem>>([]);
     const [loading, setLoading] = useState(true);
@@ -120,11 +120,11 @@ export default function TransactionTable({ selectedCurrency }: TransactionTableP
         const fetchConversions = async () => {
             try {
                 const conversionData = await getTreasuryConversionsAsync(selectedCurrency);
-                log.debug(`TransactionTable::Fetched currency conversions: ${JSON.stringify(conversionData)}`);
+                log.info(`TransactionTable.useEffect(selectedCurrency)::Fetched currency conversions: ${JSON.stringify(conversionData)}`);
                 const sortedConversions = conversionData.sort((a, b) =>
                     b.effective_date.localeCompare(a.effective_date)
                 );
-                log.debug(`TransactionTable::sorted currency conversions: ${JSON.stringify(sortedConversions)}`);
+                // log.debug(`TransactionTable::sorted currency conversions: ${JSON.stringify(sortedConversions)}`);
                 setConversionRates(sortedConversions);
             } catch (err) {
                 log.error(`Failed to fetch currency conversions: ${err}`);
@@ -138,6 +138,7 @@ export default function TransactionTable({ selectedCurrency }: TransactionTableP
     }, [selectedCurrency]);
 
     useEffect(() => {
+        log.info(`TransactionTable.useEffect(conversionRates)::entering`);
         const raw = sessionStorage.getItem(Constants.PURCHASES_KEY_NAME);
         const origninalTxns = raw ? JSON.parse(raw) : [];
         const transactions = recalculateConversions(origninalTxns);
@@ -162,11 +163,11 @@ export default function TransactionTable({ selectedCurrency }: TransactionTableP
 
     function getExchangeRate(transaction_date: Date): number | null {
         if (!selectedCurrency || selectedCurrency === "") {
-            log.info("TransactionTable::No currency selected, returning 1.0");
+            // log.debug("TransactionTable::No currency selected, returning 1.0");
             return 1.0; // no currency selected, return 1.0
         };
         const cutoffDate = dayjs(transaction_date).subtract(6, 'month').format("YYYY-MM-DD");
-        log.info(`TransactionTable::Getting exchange rate for date ${dayjs(transaction_date).format("YYYY-MM-DD")} with cutoff ${cutoffDate}`);
+        log.debug(`TransactionTable::Getting exchange rate for date ${dayjs(transaction_date).format("YYYY-MM-DD")} with cutoff ${cutoffDate}`);
         const txnDateString = dayjs(transaction_date).format("YYYY-MM-DD");
         const conversion = conversionRates
             .filter(conversion =>
