@@ -37,5 +37,13 @@
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Presentation\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Presentation\PurchasesPage.xaml.cs">
+      <DependentUpon>PurchasesPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
 </Project>

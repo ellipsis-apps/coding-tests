@@ -1,10 +1,10 @@
 namespace ellipsis.apps.uno.Presentation;
 
-public partial record MainModel
+public partial record MomeModel
 {
     private INavigator _navigator;
 
-    public MainModel(
+    public MomeModel(
         IStringLocalizer localizer,
         IOptions<AppConfig> appInfo,
         INavigator navigator)
@@ -19,10 +19,10 @@ public partial record MainModel
 
     public IState<string> Name => State<string>.Value(this, () => string.Empty);
 
-    public async Task GoToSecond()
+    public async Task GoToPurchases()
     {
         var name = await Name;
-        await _navigator.NavigateViewModelAsync<SecondModel>(this, data: new Entity(name!));
+        await _navigator.NavigateViewModelAsync<PurchasesModel>(this, data: new Entity(name!));
     }
 
 }
