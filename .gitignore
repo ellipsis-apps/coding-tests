@@ -419,4 +419,4 @@ FodyWeavers.xsd
 
 # Solutions I don't want yet
 **/CurrencyTest/RadzenVersion/
-# **/CurrencyTest/UnoVersion/
+**/CurrencyTest/UnoVersion/
